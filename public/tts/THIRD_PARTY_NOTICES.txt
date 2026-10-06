@@ -1,0 +1,16 @@
+NAVA Offline Indonesian TTS - Third-Party Notices
+
+1. id_ID-news_tts-medium
+   Source: https://huggingface.co/rhasspy/piper-voices/tree/main/id/id_ID/news_tts/medium
+   License: MIT
+
+2. @diffusionstudio/piper-wasm 1.0.0
+   Source: https://github.com/diffusion-studio/piper-wasm
+   License: MIT
+
+3. ONNX Runtime Web 1.18.0
+   Source: https://github.com/microsoft/onnxruntime
+   License: MIT
+
+The complete license texts remain available from the source repositories above and
+from the installed npm packages. Keep this notice when redistributing the application.

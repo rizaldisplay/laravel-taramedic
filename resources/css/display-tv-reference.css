@@ -1,0 +1,632 @@
+/* Display TV visual system reconstructed from the supplied clinic reference. */
+@layer components {
+    .display-tv-shell {
+        height: 100dvh;
+        overflow: hidden;
+        color: #071a3d;
+        background: #001a40;
+        font-family: var(--font-sans);
+    }
+
+    .display-tv-layout,
+    .display-tv-layout:has(.display-tv-ticker) {
+        position: relative;
+        display: grid;
+        height: 100%;
+        grid-template-rows: 9.4vh minmax(0, 1fr) 8.2vh;
+        gap: .7vh;
+        padding: 1vh .7vw;
+        overflow: hidden;
+        background: linear-gradient(145deg, #001534, #00326a 62%, #001e49);
+    }
+
+    .display-tv-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 0;
+        border-radius: .15vw;
+        background: #fff;
+        padding: 0 1.45vw;
+        box-shadow: 0 .25vh .8vh rgb(0 14 42 / .22);
+    }
+
+    .display-tv-header-brand {
+        display: flex;
+        min-width: 0;
+        height: 100%;
+        align-items: center;
+        gap: .8vw;
+    }
+
+    .display-tv-header-logo {
+        width: clamp(2.2rem, 3.7vw, 4.8rem);
+        height: clamp(2.2rem, 3.7vw, 4.8rem);
+    }
+
+    .display-tv-header-name { max-width: 20vw; }
+
+    .display-tv-header-institution {
+        overflow: visible;
+        color: #082c68;
+        font-size: clamp(1rem, 1.65vw, 2.15rem);
+        font-weight: 800;
+        line-height: 1.02;
+        letter-spacing: -.035em;
+        white-space: normal;
+    }
+
+    .display-tv-header-divider {
+        width: 1px;
+        height: 4.8vh;
+        margin-inline: .75vw 1.35vw;
+        background: #8aa8ca;
+    }
+
+    .display-tv-header-tagline {
+        overflow: hidden;
+        max-width: 27vw;
+        color: #0a2f70;
+        font-size: clamp(.75rem, 1.15vw, 1.5rem);
+        font-style: italic;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .display-tv-header-clock {
+        display: flex;
+        min-width: 25vw;
+        height: 7vh;
+        align-items: center;
+        justify-content: center;
+        gap: .8vw;
+        border-radius: 1.4vw;
+        background: linear-gradient(135deg, #052d70, #003a87);
+        padding: 0 1.4vw;
+        color: #fff;
+        box-shadow: inset 0 1px rgb(255 255 255 / .12);
+    }
+
+    .display-tv-header-date {
+        color: inherit;
+        font-size: clamp(.66rem, 1vw, 1.28rem);
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .display-tv-header-clock-divider {
+        width: 1px;
+        height: 3.2vh;
+        background: rgb(255 255 255 / .65);
+    }
+
+    .display-tv-header-time {
+        color: inherit;
+        font-size: clamp(1rem, 1.55vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -.035em;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .display-tv-main {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: minmax(0, 1.62fr) minmax(22rem, 1fr);
+        gap: .55vw;
+    }
+
+    .display-tv-health-column {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: minmax(0, 1fr) 17.2vh;
+        gap: .7vh;
+    }
+
+    .display-tv-health-poster {
+        position: relative;
+        min-height: 0;
+        overflow: hidden;
+        border: 1px solid rgb(255 255 255 / .7);
+        border-radius: .75vw;
+        background: #eef9fc;
+        box-shadow: 0 .35vh 1.1vh rgb(0 17 48 / .3);
+    }
+
+    .display-tv-ad-panel {
+        position: relative;
+        min-height: 0;
+        overflow: hidden;
+        border: 1px solid rgb(255 255 255 / .7);
+        border-radius: .75vw;
+        background: #001633;
+        box-shadow: 0 .35vh 1.1vh rgb(0 17 48 / .3);
+    }
+
+    .display-tv-ad-panel .display-tv-video-player,
+    .display-tv-ad-panel .display-tv-video-media {
+        width: 100%;
+        height: 100%;
+    }
+
+    .display-tv-ad-panel .display-tv-video-media { object-fit: cover; }
+
+    .display-tv-health-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .display-tv-health-wash {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgb(237 249 253 / .99) 0%, rgb(237 249 253 / .94) 29%, rgb(237 249 253 / .58) 48%, transparent 66%);
+    }
+
+    .display-tv-health-copy {
+        position: absolute;
+        top: 7.5%;
+        left: 4.5%;
+        width: 49%;
+        color: #052d70;
+    }
+
+    .display-tv-health-copy h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 3.6vw, 4.8rem);
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -.045em;
+    }
+
+    .display-tv-health-copy > p {
+        margin-top: 2.5vh;
+        color: #12933d;
+        font-size: clamp(1rem, 1.7vw, 2.25rem);
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -.03em;
+    }
+
+    .display-tv-health-benefits {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1vw;
+        margin-top: 2.7vh;
+    }
+
+    .display-tv-health-benefit {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: center;
+        gap: .7vh;
+        color: #062c6c;
+        text-align: center;
+        font-size: clamp(.65rem, .9vw, 1.15rem);
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .display-tv-health-benefit-icon {
+        display: grid;
+        width: clamp(2.3rem, 4vw, 5.3rem);
+        height: clamp(2.3rem, 4vw, 5.3rem);
+        place-items: center;
+        border: .14vw solid currentColor;
+        border-radius: 999px;
+        background: rgb(255 255 255 / .48);
+    }
+
+    .display-tv-health-benefit-icon svg { width: 64%; height: 64%; }
+
+    .display-tv-health-ribbon {
+        position: absolute;
+        bottom: 3.7%;
+        left: 4.6%;
+        display: flex;
+        width: 54%;
+        min-height: 4.8vh;
+        align-items: center;
+        gap: 1vw;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #083576, #002b67);
+        padding: .55vh 1.35vw .55vh 4.35vw;
+        color: #fff;
+        font-size: clamp(.58rem, .92vw, 1.18rem);
+        font-weight: 600;
+    }
+
+    .display-tv-health-shield {
+        position: absolute;
+        left: .3vw;
+        display: grid;
+        width: 3.4vw;
+        height: 4.8vh;
+        place-items: center;
+        border-radius: 48% 48% 58% 58%;
+        background: linear-gradient(160deg, #76c83c, #2e9e35);
+        color: #fff;
+    }
+
+    .display-tv-health-shield svg { width: 65%; height: 65%; }
+
+    .display-tv-health-tips {
+        display: grid;
+        min-height: 0;
+        overflow: hidden;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        border: 1px solid rgb(255 255 255 / .65);
+        border-radius: .75vw;
+        background: #fff;
+        box-shadow: 0 .35vh 1.1vh rgb(0 17 48 / .25);
+    }
+
+    .display-tv-health-tip {
+        display: grid;
+        min-width: 0;
+        grid-template-columns: 3.5vw minmax(0, 1fr);
+        align-items: center;
+        gap: .7vw;
+        padding: 1.1vh 1vw;
+        color: #071a3d;
+        font-size: clamp(.68rem, .92vw, 1.18rem);
+        font-weight: 600;
+        line-height: 1.45;
+    }
+
+    .display-tv-health-tip + .display-tv-health-tip { border-left: 1px solid rgb(7 45 105 / .08); }
+    .display-tv-health-tip svg { width: 3.3vw; height: 3.3vw; }
+    .display-tv-health-tip--green { color: #168d3b; background: linear-gradient(135deg, #eef8df, #fff); }
+    .display-tv-health-tip--blue { color: #073477; background: linear-gradient(135deg, #eef9ff, #fff); }
+    .display-tv-health-tip--yellow { color: #a96900; background: linear-gradient(135deg, #fff3c8, #fff); }
+    .display-tv-health-tip--cyan { color: #128e92; background: linear-gradient(135deg, #dff8f8, #fff); }
+    .display-tv-health-tip p { color: #071a3d; }
+
+    .display-tv-queue-column {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: 43% minmax(0, 1fr);
+        gap: .7vh;
+        border-radius: .85vw;
+        background: rgb(239 248 248 / .9);
+        padding: .7vh .55vw;
+        box-shadow: 0 .35vh 1.1vh rgb(0 17 48 / .3);
+    }
+
+    .display-tv-called {
+        min-height: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 1.05vw;
+        background: #fff;
+        box-shadow: 0 .2vh .55vh rgb(0 24 61 / .28);
+    }
+
+    .display-tv-now-serving {
+        display: flex;
+        height: 100%;
+        min-height: 0;
+        flex-direction: column;
+        overflow: hidden;
+        background: #fff;
+        color: #071a3d;
+    }
+
+    .display-tv-now-serving::after { display: none; }
+    .display-tv-now-banner {
+        position: static;
+        display: flex;
+        height: 6.2vh;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 1.05vw 1.05vw 0 0;
+        background: linear-gradient(135deg, #052c68, #00397d);
+        color: #fff;
+        font-size: clamp(.78rem, 1.28vw, 1.65rem);
+        font-weight: 800;
+        letter-spacing: .025em;
+        text-transform: uppercase;
+    }
+
+    .display-tv-now-body {
+        position: static;
+        display: grid;
+        min-height: 0;
+        flex: 1;
+        place-items: stretch;
+        padding: 0;
+    }
+
+    .display-tv-now-call {
+        display: flex;
+        height: 100%;
+        min-height: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 0;
+        background: #fff;
+        padding: 1.1vh 1vw;
+        text-align: center;
+    }
+
+    .display-tv-now-service {
+        overflow: hidden;
+        max-width: 100%;
+        color: #062c6d;
+        font-family: var(--font-display);
+        font-size: clamp(1rem, 1.55vw, 2rem);
+        font-weight: 800;
+        line-height: 1.05;
+        text-transform: uppercase;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .display-tv-now-ticket {
+        display: flex;
+        margin-block: 1.35vh;
+        align-items: baseline;
+        justify-content: center;
+        column-gap: .1em;
+        color: #159b3d;
+        font-size: clamp(3.6rem, 7.4vw, 9.4rem);
+        font-weight: 800;
+        line-height: .82;
+        letter-spacing: .01em;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        text-shadow: 0 .12vh rgb(0 77 31 / .06);
+    }
+
+    .display-tv-now-code,
+    .display-tv-now-separator,
+    .display-tv-now-number {
+        color: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+    }
+
+    .display-tv-now-counter {
+        display: flex;
+        width: 94%;
+        align-items: center;
+        justify-content: center;
+        gap: .8vw;
+        border-top: 1px solid #c9d7e0;
+        padding-top: 1.35vh;
+    }
+
+    .display-tv-now-counter svg { width: 2.25vw; height: 2.25vw; color: #19a244; }
+
+    .display-tv-now-counter-value {
+        overflow: hidden;
+        max-width: 80%;
+        border-radius: 0;
+        background: transparent;
+        padding: 0;
+        color: #091a39;
+        font-size: clamp(.95rem, 1.35vw, 1.75rem);
+        font-weight: 800;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        box-shadow: none;
+    }
+
+    .display-tv-now-serving--idle,
+    .display-tv-now-call--idle { background: #f7fafb; }
+    .display-tv-now-ticket--idle { margin-block: 1vh; opacity: .18; }
+    .display-tv-now-idle-hint { color: #75859b; font-size: clamp(.75rem, 1vw, 1.25rem); font-weight: 700; }
+
+    .display-tv-recent {
+        display: grid;
+        min-height: 0;
+        grid-template-rows: 5.4vh minmax(0, 1fr);
+        grid-template-columns: 1fr;
+        gap: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 1vw;
+        background: linear-gradient(135deg, #052c68, #00397d);
+        padding: 0 .35vw .55vh;
+        color: #fff;
+        box-shadow: none;
+    }
+
+    .display-tv-recent-heading {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: .65vw;
+        border-radius: 0;
+        background: transparent;
+        padding: 0 .85vw;
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: clamp(.82rem, 1.12vw, 1.45rem);
+        font-weight: 800;
+        letter-spacing: .015em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .display-tv-recent-heading svg { width: 2vw; height: 2vw; }
+
+    .display-tv-recent-flow {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, minmax(0, 1fr));
+        gap: .35vh;
+    }
+
+    .display-tv-recent-card,
+    .display-tv-recent-card--idle {
+        position: static;
+        display: grid;
+        min-width: 0;
+        grid-template-columns: 2.9vw minmax(5.8rem, 1fr) minmax(0, 1.55fr) 4.1vw;
+        align-items: center;
+        gap: .55vw;
+        overflow: hidden;
+        border: 0;
+        border-radius: .65vw;
+        background: #fff;
+        padding: .45vh .65vw;
+        color: #071a3d;
+    }
+
+    .display-tv-recent-card--idle { background: #f7fafb; color: #9cabb9; }
+    .display-tv-recent-card--enter { animation: display-card-enter 650ms cubic-bezier(.22, 1, .36, 1); }
+
+    .display-tv-recent-index {
+        display: grid;
+        width: 2.6vw;
+        height: 2.6vw;
+        place-items: center;
+        border-radius: .55vw;
+        background: linear-gradient(145deg, #36bb55, #12933d);
+        color: #fff;
+        font-size: clamp(.8rem, 1.18vw, 1.5rem);
+        font-weight: 800;
+    }
+
+    .display-tv-recent-ticket {
+        display: block;
+        overflow: hidden;
+        color: #159b3d;
+        font-family: var(--font-display);
+        font-size: clamp(1.1rem, 1.68vw, 2.15rem);
+        font-weight: 800;
+        letter-spacing: .01em;
+        text-align: left;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .display-tv-recent-ticket--idle { opacity: .28; }
+
+    .display-tv-recent-service {
+        overflow: hidden;
+        color: #071a3d;
+        font-size: clamp(.72rem, 1vw, 1.28rem);
+        font-weight: 700;
+        letter-spacing: .015em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .display-tv-recent-service--idle { color: #91a0af; }
+
+    .display-tv-recent-time {
+        color: #071a3d;
+        font-size: clamp(.68rem, .88vw, 1.12rem);
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .display-tv-ticker-shell {
+        min-width: 0;
+        min-height: 0;
+    }
+
+    .display-tv-ticker {
+        position: relative;
+        display: flex;
+        height: 100%;
+        min-width: 0;
+        align-items: center;
+        gap: .9vw;
+        overflow: hidden;
+        border: 1px solid rgb(68 135 203 / .38);
+        border-radius: 0;
+        background: linear-gradient(90deg, #032f68, #003d7e 55%, #012f68);
+        padding: .55vh .7vw;
+        color: #fff;
+        box-shadow: inset 0 1px rgb(255 255 255 / .08);
+    }
+
+    .display-tv-ticker-label {
+        display: grid;
+        height: 6.5vh;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 1.15vw;
+        background: linear-gradient(135deg, #31b950, #10a242);
+        padding: 0 2vw;
+        font-size: clamp(.95rem, 1.28vw, 1.65rem);
+        font-weight: 900;
+        text-transform: uppercase;
+        box-shadow: 0 .2vh .7vh rgb(0 18 48 / .22);
+    }
+
+    .display-tv-ticker-window { min-width: 0; height: 100%; flex: 1; overflow: hidden; }
+
+    .display-tv-ticker-track {
+        display: flex;
+        width: max-content;
+        height: 100%;
+        align-items: center;
+        animation: display-tv-marquee var(--display-tv-ticker-duration, 60s) linear infinite;
+        will-change: transform;
+    }
+
+    .display-tv-ticker-content {
+        display: flex;
+        min-width: 82vw;
+        height: 100%;
+        flex: none;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .display-tv-ticker-item {
+        padding-inline: 1.7vw;
+        font-size: clamp(1.05rem, 1.38vw, 1.78rem);
+        font-weight: 800;
+        letter-spacing: .01em;
+        white-space: nowrap;
+    }
+
+    .display-tv-ticker-item::after {
+        content: '\2022';
+        margin-left: 3.8vw;
+        color: #61c940;
+        opacity: 1;
+    }
+
+    .display-tv-audio-unlock {
+        right: 1vw;
+        bottom: 1.4vh;
+        left: auto;
+        border: 1px solid rgb(255 255 255 / .55);
+        background: #fff;
+        padding: .65vh 1vw;
+        color: #062d70;
+        font-size: clamp(.58rem, .72vw, .92rem);
+        transform: none;
+    }
+
+    @keyframes display-tv-marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 900px) {
+        .display-tv-main { grid-template-columns: minmax(0, 1.2fr) minmax(17rem, 1fr); }
+        .display-tv-header-tagline,
+        .display-tv-header-divider { display: none; }
+        .display-tv-health-copy { width: 60%; }
+        .display-tv-health-benefits { gap: .35vw; }
+    }
+}

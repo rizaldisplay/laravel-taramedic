@@ -1,0 +1,28 @@
+{
+    "engine": "Piper ONNX WebAssembly",
+    "voice": "id_ID-news_tts-medium",
+    "language": "id-ID",
+    "sample_rate": 22050,
+    "files": {
+        "models/id_ID-news_tts-medium/id_ID-news_tts-medium.onnx": {
+            "bytes": 62950044,
+            "sha256": "ed8f02aa593f7af6b19acbdb8142e0da0dd72f46194eb33d38e0eb10a52597e8"
+        },
+        "models/id_ID-news_tts-medium/id_ID-news_tts-medium.onnx.json": {
+            "bytes": 5050,
+            "sha256": "1ef677072668a5e172e0759b1d3871f129009d1167f093325a17607f7add5ad7"
+        },
+        "runtime/onnx/ort-wasm-simd.wasm": {
+            "bytes": 10595041,
+            "sha256": "f533b5f21790563d7556c611c3835ac65848ee326da2689aac54ed7d9cc8c6a4"
+        },
+        "runtime/piper/piper_phonemize.data": {
+            "bytes": 18077249,
+            "sha256": "29f1025eb23a5b5c192cd14a6efbce4509402ff265405072ee6f7d1a09b78f8c"
+        },
+        "runtime/piper/piper_phonemize.wasm": {
+            "bytes": 635212,
+            "sha256": "b777cd107a91d2bcc6a1ea46f2c26a662a7407394fe84589198aeaa83dd7a9d6"
+        }
+    }
+}

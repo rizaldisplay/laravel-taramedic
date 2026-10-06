@@ -1,0 +1,145 @@
+@import 'tailwindcss';
+@import './admin-ui.css';
+@import './queue-ui.css';
+@import './display-tv-reference.css';
+
+@plugin '@tailwindcss/forms';
+
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Sora', 'Plus Jakarta Sans', sans-serif;
+    --font-outfit: 'Sora', 'Plus Jakarta Sans', sans-serif;
+    --font-kiosk: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-200: #bfdbfe;
+    --color-brand-300: #93c5fd;
+    --color-brand-400: #60a5fa;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4ed8;
+    --color-brand-800: #1e40af;
+    --color-brand-900: #1e3a8a;
+    --color-brand-950: #172554;
+
+    --color-ink-50: #f6f8fb;
+    --color-ink-100: #edf1f6;
+    --color-ink-200: #d8e0eb;
+    --color-ink-300: #b7c4d4;
+    --color-ink-400: #8c9db3;
+    --color-ink-500: #6d7f97;
+    --color-ink-600: #58687d;
+    --color-ink-700: #475467;
+    --color-ink-800: #2d3848;
+    --color-ink-900: #1b2432;
+    --color-ink-950: #0b111c;
+
+    --color-success-50: #eaf4ff;
+    --color-success-100: #cbe3ff;
+    --color-success-200: #a3cbff;
+    --color-success-300: #64aaff;
+    --color-success-400: #3b93ff;
+    --color-success-500: #206bdd;
+    --color-success-600: #165ebe;
+    --color-success-700: #15418e;
+
+    --color-error-50: #fff1f2;
+    --color-error-100: #ffe4e6;
+    --color-error-200: #fecdd3;
+    --color-error-300: #fda4af;
+    --color-error-400: #fb7185;
+    --color-error-500: #f43f5e;
+    --color-error-600: #e11d48;
+    --color-error-700: #be123c;
+
+    --color-warning-50: #fffbeb;
+    --color-warning-100: #fef3c7;
+    --color-warning-200: #fde68a;
+    --color-warning-300: #fcd34d;
+    --color-warning-400: #fbbf24;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+
+    --text-theme-xs: 0.75rem;
+    --text-theme-sm: 0.875rem;
+    --z-index-9999: 9999;
+
+    --shadow-panel: 0 1px 2px rgb(15 23 42 / 0.04), 0 18px 50px rgb(15 23 42 / 0.07);
+    --shadow-float: 0 24px 80px rgb(6 45 43 / 0.18);
+}
+
+@layer base {
+    *, ::before, ::after {
+        border-color: color-mix(in srgb, var(--color-ink-200) 80%, transparent);
+    }
+
+    html {
+        min-width: 320px;
+        background: var(--color-ink-50);
+        color: var(--color-ink-900);
+        font-family: var(--font-sans);
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    button, a, input, select, textarea {
+        transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+        transition-duration: 160ms;
+        transition-timing-function: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    button, [role='button'] {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    :focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--color-brand-400) 55%, transparent);
+        outline-offset: 3px;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    .dark {
+        color-scheme: dark;
+    }
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        scrollbar-width: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .display-tv-ticker-track {
+        animation-duration: var(--display-tv-ticker-duration, 60s) !important;
+        animation-iteration-count: infinite !important;
+        animation-timing-function: linear !important;
+    }
+}
