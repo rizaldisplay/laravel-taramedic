@@ -14,10 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(QueueSystemSeeder::class);
-
+        
         if (app()->environment(['local', 'testing'])) {
+            $this->call(QueueSystemSeeder::class);
             $this->call(UserSeeder::class);
+            $this->call(SdmkSeeder::class);
         }
     }
 }

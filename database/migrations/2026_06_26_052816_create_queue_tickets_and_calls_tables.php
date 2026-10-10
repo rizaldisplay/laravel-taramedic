@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('queue_tickets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('service_id')->constrained()->restrictOnDelete();
+            $table->foreignId('antrean_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('counter_id')->nullable()->constrained()->nullOnDelete();
             $table->string('ticket_number', 20);
             $table->unsignedInteger('sequence');
@@ -33,6 +34,7 @@ return new class extends Migration
 
             $table->unique(['service_id', 'queue_date', 'sequence']);
             $table->index(['service_id', 'queue_date', 'status']);
+            $table->index(['antrean_id', 'queue_date', 'status']);
             $table->index(['queue_date', 'status']);
             $table->index(['counter_id', 'status']);
             $table->index(
@@ -49,11 +51,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('queue_ticket_id')->constrained()->cascadeOnDelete();
             $table->foreignId('counter_id')->constrained()->restrictOnDelete();
+            $table->foreignId('antrean_id')->constrained()->restrictOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('call_type', 20);
             $table->timestamp('called_at');
             $table->timestamps();
 
+            $table->index(['antrean_id', 'called_at']);
             $table->index(['queue_ticket_id', 'called_at']);
             $table->index(['counter_id', 'called_at']);
         });

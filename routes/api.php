@@ -5,6 +5,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Queue\KioskController;
 use App\Http\Controllers\Api\Queue\CounterController;
+use App\Http\Controllers\Api\Registrasi\PatientController;
+use App\Http\Controllers\Api\Registrasi\RegionController;
+use App\Http\Controllers\Api\Registrasi\RegistrationOptionsController;
+use App\Http\Controllers\Api\Registrasi\VisitController;
 use App\Http\Controllers\Api\AuthController;
 
 
@@ -35,6 +39,48 @@ Route::prefix('counter/{counter}')->group(function () {
     Route::patch('/tickets/{ticket}/start-serving', [CounterController::class, 'startServing'])->name('counter.start-serving');
     Route::patch('/tickets/{ticket}/defer', [CounterController::class, 'defer'])->name('counter.defer');
     Route::patch('/tickets/{ticket}/complete', [CounterController::class, 'complete'])->name('counter.complete');
+});
+
+// ---- Pasien ----
+Route::get('patients', [PatientController::class, 'index']);
+    // ->middleware('throttle:120,1');
+
+// Throttle ketat: endpoint ini mengungkap apakah seseorang terdaftar sebagai pasien.
+Route::get('patients/check-nik/{nik}', [PatientController::class, 'checkNik'])
+    ->where('nik', '[0-9]{16}');
+    // ->middleware('throttle:30,1');
+
+Route::post('patients', [PatientController::class, 'store']);
+Route::get('patients/{patient}', [PatientController::class, 'show'])->whereNumber('patient');
+Route::get('patients/{patient}/summary', [PatientController::class, 'summary'])->whereNumber('patient');
+Route::put('patients/{patient}', [PatientController::class, 'update'])->whereNumber('patient');
+
+// ---- Pendaftaran kunjungan ----
+Route::get('registration/options', RegistrationOptionsController::class);
+Route::post('visits', [VisitController::class, 'store']);
+
+// ---- Wilayah (diteruskan dari Wilayah.id, di-cache) ----
+// Format kode dibatasi agar input tidak bisa menyusup ke URL permintaan keluar.
+Route::prefix('regions')->group(function () {
+    Route::get('provinces', [RegionController::class, 'provinces']);
+    Route::get('provinces/{province}/regencies', [RegionController::class, 'regencies'])
+        ->where('province', '[0-9]{2}');
+    Route::get('regencies/{regency}/districts', [RegionController::class, 'districts'])
+        ->where('regency', '[0-9]{2}\.[0-9]{2}');
+    Route::get('districts/{district}/villages', [RegionController::class, 'villages'])
+        ->where('district', '[0-9]{2}\.[0-9]{2}\.[0-9]{2}');
+});
+
+// Data wilayah diteruskan dari Wilayah.id (di-cache). Format kode dibatasi
+// agar input tidak bisa menyusup ke URL permintaan keluar.
+Route::prefix('regions')->group(function () {
+    Route::get('provinces', [RegionController::class, 'provinces']);
+    Route::get('provinces/{province}/regencies', [RegionController::class, 'regencies'])
+        ->where('province', '[0-9]{2}');
+    Route::get('regencies/{regency}/districts', [RegionController::class, 'districts'])
+        ->where('regency', '[0-9]{2}\.[0-9]{2}');
+    Route::get('districts/{district}/villages', [RegionController::class, 'villages'])
+        ->where('district', '[0-9]{2}\.[0-9]{2}\.[0-9]{2}');
 });
 
 
