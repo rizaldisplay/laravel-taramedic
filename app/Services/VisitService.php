@@ -17,20 +17,23 @@ use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Database\UniqueConstraintViolationException;
 
+// MENGGANTIKAN app/Services/VisitService.php: dokter berasal dari SDMK (Doctor::available()), poli hanya yang untuk antrean.
 final class VisitService
 {
     public function __construct(private readonly CreateVisit $createVisit)
     {
     }
 
-    /** Semua opsi dropdown pendaftaran kunjungan (kunci camelCase sesuai frontend). */
+    /** Semua opsi dropdown pendaftaran kunjungan (kunci camelCase sesuai frontend; bentuk tidak berubah). */
     public function options(?User $user): array
     {
         return [
-            'poli' => Poli::query()->where('is_active', true)->orderBy('name')->get()
+            'poli' => Poli::query()->where('is_active', true)->where('untuk_antrean', true)->orderBy('name')->get()
                 ->map(fn (Poli $p) => ['id' => $p->id, 'nama' => $p->name])->all(),
-            'dokter' => Doctor::query()->where('is_active', true)->orderBy('name')->get()
-                ->map(fn (Doctor $d) => ['id' => $d->id, 'nama' => $d->name, 'poliId' => $d->poli_id])->all(),
+            'dokter' => Doctor::query()->available()->with('healthWorker')->get()
+                ->sortBy(fn (Doctor $d) => $d->displayName())
+                ->map(fn (Doctor $d) => ['id' => $d->id, 'nama' => $d->displayName(), 'poliId' => $d->poli_id])
+                ->values()->all(),
             'jenisLayanan' => JenisLayanan::values(),
             'caraMasuk' => CaraMasuk::values(),
             'penjamin' => Penjamin::values(),
@@ -52,6 +55,6 @@ final class VisitService
             throw DuplicateVisitException::today();
         }
 
-        return $visit->load(['poli', 'doctor', 'location']);
+        return $visit->load(['poli', 'doctor.healthWorker', 'location']);
     }
 }

@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\Masterdata\Sdmk\SdmkLicenseController;
 use App\Http\Controllers\Api\Masterdata\Sdmk\SdmkScheduleController;
 use App\Http\Controllers\Api\AuthController;
 
+require __DIR__.'/unit-poli.php';
+
 
 // Endpoint publik
 Route::post('/login', [AuthController::class, 'login']);

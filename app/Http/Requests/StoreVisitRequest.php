@@ -3,32 +3,41 @@
 namespace App\Http\Requests;
 
 use App\DTOs\Registrasi\VisitData;
-use App\Enums\Patient\CaraMasuk;
-use App\Enums\Patient\JenisLayanan;
-use App\Enums\Patient\JenisPembayaran;
+use App\Enums\CaraMasuk;
+use App\Enums\JenisLayanan;
+use App\Enums\JenisPembayaran;
 use App\Enums\Patient\Penjamin;
 use App\Enums\Patient\Prioritas;
+use App\Models\Doctor;
 use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+// MENGGANTIKAN StoreVisitRequest.php: validasi dokter memakai Doctor::available().
 /** Kunci input camelCase sesuai payload frontend (lihat visitSlice.registerVisit). */
 class StoreVisitRequest extends FormRequest
 {
-    // public function authorize(): bool
-    // {
-    //     return $this->user()?->can('create', Visit::class) ?? false;
-    // }
+    public function authorize(): bool
+    {
+        return $this->user()?->can('create', Visit::class) ?? false;
+    }
 
     public function rules(): array
     {
         return [
             'patientId' => ['required', 'integer', Rule::exists('patients', 'id')],
             'poliId' => ['required', 'integer', Rule::exists('polis', 'id')->where('is_active', true)],
-            // Dokter harus bertugas di poli yang dipilih
-            'dokterId' => ['required', 'integer', Rule::exists('doctors', 'id')
-                ->where('poli_id', $this->input('poliId'))
-                ->where('is_active', true)],
+            // Dokter harus: aktif, bertugas di poli terpilih, dan (bila terhubung ke SDMK) berizin & ditempatkan.
+            'dokterId' => ['required', 'integer', function (string $attribute, mixed $value, \Closure $fail) {
+                $ok = Doctor::query()->available()
+                    ->whereKey($value)
+                    ->where('doctors.poli_id', $this->input('poliId'))
+                    ->exists();
+
+                if (! $ok) {
+                    $fail(':attribute tidak tersedia di poli ini (nonaktif, izin berakhir, atau tidak ditempatkan).');
+                }
+            }],
             'jenisLayanan' => ['required', Rule::enum(JenisLayanan::class)],
             'caraMasuk' => ['required', Rule::enum(CaraMasuk::class)],
             'penjamin' => ['required', Rule::enum(Penjamin::class)],

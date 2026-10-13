@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Bentuk response = type `VisitResult` di frontend. Eager load: poli, doctor, location
+ * Bentuk response = type `VisitResult` di frontend. Eager load: poli, doctor.healthWorker, location
  *
  * @mixin \App\Models\Visit
  */
@@ -21,7 +21,7 @@ class VisitResource extends JsonResource
             'nomorKunjungan' => $this->nomor_kunjungan,
             'tanggal' => $this->registered_at->format('d-m-Y H:i'),
             'poli' => $this->poli->name,
-            'dokter' => $this->doctor->name,
+            'dokter' => $this->doctor->displayName(),
             'lokasi' => $this->location->name,
         ];
     }

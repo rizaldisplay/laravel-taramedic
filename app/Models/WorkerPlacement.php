@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+// MENGGANTIKAN WorkerPlacement.php dari paket SDMK (menambah relasi healthWorker).
 class WorkerPlacement extends Model
 {
     protected $guarded = ['id'];
@@ -14,6 +15,11 @@ class WorkerPlacement extends Model
         'tanggal_berakhir' => 'date',
         'is_unit_head' => 'boolean',
     ];
+
+    public function healthWorker(): BelongsTo
+    {
+        return $this->belongsTo(HealthWorker::class);
+    }
 
     public function facility(): BelongsTo
     {

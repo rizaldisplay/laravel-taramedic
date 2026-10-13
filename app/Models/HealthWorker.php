@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// MENGGANTIKAN HealthWorker.php dari paket SDMK (menambah relasi doctors).
 class HealthWorker extends Model
 {
     use SoftDeletes;
@@ -67,6 +68,11 @@ class HealthWorker extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(WorkerActivity::class);
+    }
+
+    public function doctors(): HasMany
+    {
+        return $this->hasMany(Doctor::class);
     }
 
     public function strVerifier(): BelongsTo

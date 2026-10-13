@@ -10,10 +10,10 @@ abstract class SdmkRequest extends FormRequest
     protected const REGEX_HP = '/^(\+62|62|0)8\d{8,12}$/';
     protected const REGEX_JAM = '/^([01]\d|2[0-3]):[0-5]\d$/';
 
-    public function authorize(): bool
-    {
-        return true;
-    }
+    // public function authorize(): bool
+    // {
+    //     return true;
+    // }
 
     /** Nilai string kosong dianggap null (frontend mengirim null, tetapi multipart mengirim ""). */
     protected function prepareForValidation(): void
