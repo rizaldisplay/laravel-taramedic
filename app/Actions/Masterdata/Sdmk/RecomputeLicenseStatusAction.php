@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Sdmk;
+namespace App\Actions\Masterdata\Sdmk;
 
 use App\Actions\Doctor\SyncDoctorsForWorkerAction;
 use App\Models\HealthWorker;
