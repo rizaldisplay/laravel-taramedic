@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         
         if (app()->environment(['local', 'testing'])) {
             $this->call(QueueSystemSeeder::class);
-            $this->call(UserSeeder::class);
+            $this->call(AdminSeeder::class);
             $this->call(RegistrationMasterSeeder::class);
             $this->call(SdmkMasterSeeder::class);
             $this->call(SdmkDoctorSeeder::class);
