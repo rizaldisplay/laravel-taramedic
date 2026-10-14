@@ -32,7 +32,7 @@ return new class extends Migration
             $table->date('tanggal_sk')->nullable();
             $table->foreignId('facility_id')->constrained('facilities');
             $table->foreignId('poli_id')->constrained('polis');
-            $table->foreignId('room_id')->nullable()->constrained('rooms')->nullOnDelete();
+            $table->foreignId('service_location_id')->nullable()->constrained('service_locations')->nullOnDelete();
             $table->text('alamat_praktik');
             $table->string('province_code', 2);
             $table->string('regency_code', 5);
@@ -56,7 +56,8 @@ return new class extends Migration
             $table->foreignId('health_worker_id')->constrained()->cascadeOnDelete();
             $table->foreignId('facility_id')->constrained('facilities');
             $table->foreignId('poli_id')->constrained('polis');
-            $table->foreignId('room_id')->constrained('rooms');
+            // Nullable di DB (selaras dengan hasil migrasi dari tabel lama); wajib diisi oleh validasi PenempatanRequest.
+            $table->foreignId('service_location_id')->nullable()->constrained('service_locations')->nullOnDelete();
             $table->string('peran', 80);
             $table->string('jabatan', 80)->nullable();
             $table->string('status', 20)->default('Aktif');

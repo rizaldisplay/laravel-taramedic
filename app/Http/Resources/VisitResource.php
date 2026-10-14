@@ -26,3 +26,4 @@ class VisitResource extends JsonResource
         ];
     }
 }
+

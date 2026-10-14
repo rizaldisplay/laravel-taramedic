@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Facility;
 use App\Models\Poli;
-use App\Models\Room;
+use App\Models\ServiceLocation;
+use Illuminate\Support\Str;
 use App\Models\SdmkReference;
 use Illuminate\Database\Seeder;
 
@@ -54,7 +55,10 @@ class SdmkMasterSeeder extends Seeder
         $facility = Facility::firstOrCreate(['name' => 'Klinik Utama (contoh)']);
         foreach (['Poli Umum', 'Poli Anak', 'Poli Penyakit Dalam'] as $name) {
             $poli = Poli::updateOrCreate(['name' => $name], ['facility_id' => $facility->id, 'is_active' => true]);
-            Room::firstOrCreate(['name' => 'Ruang ' . $name, 'poli_id' => $poli->id], ['facility_id' => $facility->id]);
+            ServiceLocation::updateOrCreate(['name' => 'Ruang ' . $name], [
+                'kode' => substr('RUANG-' . Str::upper(Str::slug($name)), 0, 30),
+                'tipe' => 'Ruang', 'poli_id' => $poli->id, 'facility_id' => $facility->id, 'is_active' => true,
+            ]);
         }
     }
 }

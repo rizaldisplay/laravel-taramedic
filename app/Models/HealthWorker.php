@@ -79,6 +79,7 @@ class HealthWorker extends Model
     {
         return $this->belongsTo(User::class, 'str_verified_by');
     }
+    
 
     /** Nama tampilan: gelar depan + nama + gelar belakang. */
     public function displayName(): string

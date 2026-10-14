@@ -32,15 +32,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('rooms', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->foreignId('facility_id')->nullable()->constrained('facilities')->nullOnDelete();
-            $table->foreignId('poli_id')->nullable()->constrained('polis')->nullOnDelete();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
-
+        // Ruangan memakai tabel service_locations (paket Lokasi Pelayanan), bukan tabel `rooms` tersendiri.
         Schema::table('polis', function (Blueprint $table) {
             $table->foreignId('facility_id')->nullable()->after('name')->constrained('facilities')->nullOnDelete();
         });
@@ -51,7 +43,6 @@ return new class extends Migration
         Schema::table('polis', function (Blueprint $table) {
             $table->dropConstrainedForeignId('facility_id');
         });
-        Schema::dropIfExists('rooms');
         Schema::dropIfExists('facilities');
         Schema::dropIfExists('sdmk_references');
     }

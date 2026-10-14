@@ -44,7 +44,7 @@ class StoreVisitRequest extends FormRequest
             'jenisPembayaran' => ['required', Rule::enum(JenisPembayaran::class)],
             'prioritas' => ['required', Rule::enum(Prioritas::class)],
             'loketId' => ['required', 'integer', Rule::in(array_keys(config('registration.counters')))],
-            'lokasiId' => ['required', 'integer', Rule::exists('service_locations', 'id')->where('is_active', true)],
+            'lokasiId' => ['required', 'integer', Rule::exists('service_locations', 'id')->where('is_active', true)->whereNotIn('tipe', ['Gedung', 'Lantai'])],
             'tiketId' => ['nullable', 'string', 'max:50'],
         ];
     }

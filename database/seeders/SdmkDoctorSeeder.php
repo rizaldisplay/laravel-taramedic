@@ -9,8 +9,8 @@ use App\Models\Doctor;
 use App\Models\Facility;
 use App\Models\HealthWorker;
 use App\Models\Poli;
-use App\Models\Room;
 use App\Models\SdmkReference;
+use App\Models\ServiceLocation;
 use App\Models\WorkerPlacement;
 use App\Models\WorkerScheduleDay;
 use App\Models\WorkerSip;
@@ -18,6 +18,7 @@ use App\Services\RegionService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -73,7 +74,16 @@ class SdmkDoctorSeeder extends Seeder
 
         foreach ($this->data() as $i => $d) {
             $poli = $this->preparePoli($d['poli'], $facility);
-            $room = Room::firstOrCreate(['name' => 'Ruang ' . $poli->name, 'poli_id' => $poli->id], ['facility_id' => $facility->id]);
+            $room = ServiceLocation::updateOrCreate(
+                ['name' => 'Ruang ' . $poli->name],
+                [
+                    'kode' => substr('RUANG-' . Str::upper(Str::slug($poli->name)), 0, 30),
+                    'tipe' => 'Ruang',
+                    'poli_id' => $poli->id,
+                    'facility_id' => $facility->id,
+                    'is_active' => true,
+                ]
+            );
 
             $worker = $this->seedWorker($d, $i + 1, $region);
             $this->seedStrAndSip($worker, $d, $facility, $poli, $room, $region);
@@ -143,7 +153,7 @@ class SdmkDoctorSeeder extends Seeder
     }
 
     /** @param array<string, mixed> $d */
-    private function seedStrAndSip(HealthWorker $w, array $d, Facility $facility, Poli $poli, Room $room, array $region): void
+    private function seedStrAndSip(HealthWorker $w, array $d, Facility $facility, Poli $poli, ServiceLocation $room, array $region): void
     {
         $today = now();
         $strExpired = (bool) ($d['strExpired'] ?? false);
@@ -167,7 +177,7 @@ class SdmkDoctorSeeder extends Seeder
                 'berlaku_hingga' => $today->copy()->addDays($d['sipDays'] ?? 730)->toDateString(),
                 'status' => 'Aktif',
                 'tempat_terbit' => 'Dinas Kesehatan Kota (contoh)',
-                'facility_id' => $facility->id, 'poli_id' => $poli->id, 'room_id' => $room->id,
+                'facility_id' => $facility->id, 'poli_id' => $poli->id, 'service_location_id' => $room->id,
                 'alamat_praktik' => 'Jl. Klinik Contoh No. 1',
                 'province_code' => '31', 'regency_code' => '31.74', 'district_code' => '31.74.09', 'village_code' => '31.74.09.1002',
                 ...$region,
@@ -176,12 +186,12 @@ class SdmkDoctorSeeder extends Seeder
         );
     }
 
-    private function seedPlacement(HealthWorker $w, Facility $facility, Poli $poli, Room $room): void
+    private function seedPlacement(HealthWorker $w, Facility $facility, Poli $poli, ServiceLocation $room): void
     {
         WorkerPlacement::withoutEvents(fn () => WorkerPlacement::firstOrCreate(
             ['health_worker_id' => $w->id, 'poli_id' => $poli->id],
             [
-                'facility_id' => $facility->id, 'room_id' => $room->id,
+                'facility_id' => $facility->id, 'service_location_id' => $room->id,
                 'peran' => $w->jenis_sdmk === 'tenaga_medis' ? 'dpjp' : 'pelaksana',
                 'status' => 'Aktif',
                 'tanggal_mulai' => now()->subYear()->toDateString(),

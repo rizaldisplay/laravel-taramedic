@@ -31,8 +31,8 @@ class WorkerPlacement extends Model
         return $this->belongsTo(Poli::class);
     }
 
-    public function room(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(ServiceLocation::class, 'service_location_id');
     }
 }
