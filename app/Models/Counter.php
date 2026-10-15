@@ -10,10 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\Masterdata\Loket\TipeLoket;
 
 #[Fillable([
     'code',
     'name',
+    'tipe',
+    'deskripsi',
     'sort_order',
     'is_active',
     'claimed_by_user_id',
@@ -28,6 +31,8 @@ class Counter extends Model
     protected $fillable = [
         'code',
         'name',
+        'tipe',
+        'deskripsi',
         'sort_order',
         'is_active',
         'claimed_by_user_id',
@@ -39,6 +44,9 @@ class Counter extends Model
         'sort_order' => 0,
         'is_active' => true,
     ];
+
+    protected $guarded = ['id'];
+    protected $casts = ['is_active' => 'boolean', 'tipe' => TipeLoket::class];
 
     /**
      * @return array<string, string>
@@ -119,5 +127,18 @@ class Counter extends Model
     public function scopeUnclaimed(Builder $query): Builder
     {
         return $query->whereNull('claimed_by_user_id');
+    }
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $like = '%' . addcslashes($term, '%_\\') . '%';
+
+        return $query->where(fn (Builder $q) => $q->where('name', 'like', $like)->orWhere('kode', 'like', $like));
+    }
+
+    /** Loket yang boleh dipilih saat mendaftarkan kunjungan: aktif dan bertipe Ruang Pendaftaran. */
+    public function scopeForRegistration(Builder $query): Builder
+    {
+        return $query->where('is_active', true)->where('tipe', TipeLoket::Pendaftaran->value);
     }
 }

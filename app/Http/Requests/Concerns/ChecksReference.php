@@ -4,7 +4,7 @@ namespace App\Http\Requests\Concerns;
 
 use App\Enums\SdmkReferenceType;
 use App\Models\Poli;
-use App\Models\Room;
+use App\Models\ServiceLocation;
 use App\Models\SdmkReference;
 use Closure;
 
@@ -38,15 +38,23 @@ trait ChecksReference
         };
     }
 
-    /** Ruangan harus milik poli yang dipilih (bila ruangan tersebut terikat poli). */
-    protected function roomInPoliRule(string $poliField): Closure
+    /**
+     * Ruangan = lokasi pelayanan bertipe Ruang yang aktif. Bila ruangan terikat poli, harus poli yang dipilih;
+     * bila terikat fasyankes, harus fasyankes yang dipilih.
+     */
+    protected function locationRule(string $poliField, string $facilityField): Closure
     {
-        return function (string $attribute, mixed $value, Closure $fail) use ($poliField) {
-            $room = Room::where('is_active', true)->find($value);
+        return function (string $attribute, mixed $value, Closure $fail) use ($poliField, $facilityField) {
+            $loc = ServiceLocation::where('is_active', true)->where('tipe', 'Ruang')->find($value);
 
-            if (! $room || ($room->poli_id && (string) $room->poli_id !== (string) $this->input($poliField))) {
+            if (! $loc) {
+                $fail(':attribute tidak ditemukan atau bukan ruangan aktif.');
+            } elseif ($loc->poli_id && (string) $loc->poli_id !== (string) $this->input($poliField)) {
                 $fail(':attribute tidak sesuai unit/poli yang dipilih.');
+            } elseif ($loc->facility_id && (string) $loc->facility_id !== (string) $this->input($facilityField)) {
+                $fail(':attribute tidak sesuai fasyankes yang dipilih.');
             }
         };
     }
 }
+

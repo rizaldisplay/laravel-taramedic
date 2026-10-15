@@ -16,7 +16,7 @@ class PenempatanRequest extends SdmkRequest
         return [
             'fasyankes' => ['required', Rule::exists('facilities', 'id')->where('is_active', true)],
             'poli' => ['required', $this->poliInFacilityRule('fasyankes')],
-            'ruangan' => ['required', $this->roomInPoliRule('poli')],
+            'ruangan' => ['required', $this->locationRule('poli', 'fasyankes')],
             'peran' => ['required', $this->refRule(T::PeranUnit)],
             'jabatan' => ['nullable', $this->refRule(T::Jabatan)],
             'status' => ['required', Rule::enum(StatusAktif::class)],

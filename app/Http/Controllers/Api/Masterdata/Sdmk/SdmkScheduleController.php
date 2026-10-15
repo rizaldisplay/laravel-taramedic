@@ -27,7 +27,7 @@ class SdmkScheduleController extends Controller
 
     public function storePenempatan(PenempatanRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->schedule->savePlacement($sdmk, $request->attrs(), null, $request->user()?->id);
 
@@ -36,7 +36,7 @@ class SdmkScheduleController extends Controller
 
     public function updatePenempatan(PenempatanRequest $request, HealthWorker $sdmk, WorkerPlacement $penempatan): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
         abort_unless((int) $penempatan->health_worker_id === $sdmk->id, 404);
 
         $this->schedule->savePlacement($sdmk, $request->attrs(), $penempatan, $request->user()?->id);
@@ -46,7 +46,7 @@ class SdmkScheduleController extends Controller
 
     public function destroyPenempatan(Request $request, HealthWorker $sdmk, WorkerPlacement $penempatan): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
         abort_unless((int) $penempatan->health_worker_id === $sdmk->id, 404);
 
         $this->schedule->deletePlacement($sdmk, $penempatan, $request->user()?->id);
@@ -57,7 +57,7 @@ class SdmkScheduleController extends Controller
     /** PUT /sdmk/{sdmk}/jadwal  { setting, hari[7] } */
     public function saveJadwal(JadwalRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->schedule->saveSchedule($sdmk, $request->settingAttrs(), $request->dayRows(), $request->user()?->id);
 
@@ -66,7 +66,7 @@ class SdmkScheduleController extends Controller
 
     public function storeSlot(SlotRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->schedule->saveSlot($sdmk, $request->attrs(), null, $request->user()?->id);
 
@@ -75,7 +75,7 @@ class SdmkScheduleController extends Controller
 
     public function updateSlot(SlotRequest $request, HealthWorker $sdmk, WorkerScheduleSlot $slot): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
         abort_unless((int) $slot->health_worker_id === $sdmk->id, 404);
 
         $this->schedule->saveSlot($sdmk, $request->attrs(), $slot, $request->user()?->id);

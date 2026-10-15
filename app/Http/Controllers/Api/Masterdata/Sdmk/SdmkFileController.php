@@ -7,6 +7,7 @@ use App\Models\HealthWorker;
 use App\Models\WorkerCompetency;
 use App\Models\WorkerSip;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SdmkFileController extends Controller
@@ -24,9 +25,23 @@ class SdmkFileController extends Controller
             default => abort(404),
         };
 
-        abort_unless($path && Storage::disk(config('sdmk.disk'))->exists($path), 404);
+        $disk = Storage::disk(config('sdmk.disk'));
+        abort_unless($path && $disk->exists($path), 404);
 
-        return Storage::disk(config('sdmk.disk'))->response($path, null, [
+        $stream = $disk->readStream($path);
+        abort_unless(is_resource($stream), 404);
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $mimeType = MimeTypes::getDefault()->getMimeTypes($extension)[0] ?? 'application/octet-stream';
+
+        return new StreamedResponse(function () use ($stream): void {
+            try {
+                fpassthru($stream);
+            } finally {
+                fclose($stream);
+            }
+        }, 200, [
+            'Content-Type' => $mimeType,
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, max-age=300',
         ]);

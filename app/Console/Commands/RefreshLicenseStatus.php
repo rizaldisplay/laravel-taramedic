@@ -27,3 +27,4 @@ class RefreshLicenseStatus extends Command
         return self::SUCCESS;
     }
 }
+

@@ -28,7 +28,7 @@ class SdmkLicenseController extends Controller
     /** PUT /sdmk/{sdmk}/str */
     public function saveStr(StrRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->licenses->saveStr($sdmk, $request->attrs(), $request->validated('sertifikatLain'), $request->user()?->id);
 
@@ -38,7 +38,7 @@ class SdmkLicenseController extends Controller
     /** POST /sdmk/{sdmk}/str/verify */
     public function verifyStr(Request $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->licenses->verifyStr($sdmk, $request->user()?->id);
 
@@ -48,7 +48,7 @@ class SdmkLicenseController extends Controller
     /** POST /sdmk/{sdmk}/sip  (multipart; berkas: dokumen) */
     public function storeSip(SipRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->licenses->saveSip($sdmk, $request->attrs(), $request->file('dokumen'), null, $request->user()?->id);
 
@@ -58,7 +58,7 @@ class SdmkLicenseController extends Controller
     /** POST /sdmk/{sdmk}/sip/{sip} dengan _method=PUT (multipart tidak didukung PUT murni di PHP) */
     public function updateSip(SipRequest $request, HealthWorker $sdmk, WorkerSip $sip): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
         $this->owned($sdmk, $sip);
 
         $this->licenses->saveSip($sdmk, $request->attrs(), $request->file('dokumen'), $sip, $request->user()?->id);
@@ -69,7 +69,7 @@ class SdmkLicenseController extends Controller
     /** DELETE /sdmk/{sdmk}/sip/{sip} */
     public function destroySip(Request $request, HealthWorker $sdmk, WorkerSip $sip): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
         $this->owned($sdmk, $sip);
 
         $this->licenses->deleteSip($sdmk, $sip, $request->user()?->id);
@@ -80,7 +80,7 @@ class SdmkLicenseController extends Controller
     /** POST /sdmk/{sdmk}/kompetensi  (multipart; berkas opsional: dokumen) */
     public function storeKompetensi(KompetensiRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->licenses->addCompetency($sdmk, $request->attrs(), $request->file('dokumen'), $request->user()?->id);
 
@@ -90,7 +90,7 @@ class SdmkLicenseController extends Controller
     /** DELETE /sdmk/{sdmk}/kompetensi/{kompetensi} */
     public function destroyKompetensi(Request $request, HealthWorker $sdmk, WorkerCompetency $kompetensi): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
         $this->owned($sdmk, $kompetensi);
 
         $this->licenses->deleteCompetency($sdmk, $kompetensi, $request->user()?->id);

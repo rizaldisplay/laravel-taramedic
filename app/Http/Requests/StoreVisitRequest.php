@@ -8,6 +8,7 @@ use App\Enums\JenisLayanan;
 use App\Enums\JenisPembayaran;
 use App\Enums\Patient\Penjamin;
 use App\Enums\Patient\Prioritas;
+use App\Enums\Masterdata\Loket\TipeLoket;
 use App\Models\Doctor;
 use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
@@ -43,7 +44,8 @@ class StoreVisitRequest extends FormRequest
             'penjamin' => ['required', Rule::enum(Penjamin::class)],
             'jenisPembayaran' => ['required', Rule::enum(JenisPembayaran::class)],
             'prioritas' => ['required', Rule::enum(Prioritas::class)],
-            'loketId' => ['required', 'integer', Rule::in(array_keys(config('registration.counters')))],
+            // Loket harus aktif dan bertipe Ruang Pendaftaran (master Loket / Counter).
+            'loketId' => ['required', 'integer', Rule::exists('counters', 'id')->where('is_active', true)->where('tipe', TipeLoket::Pendaftaran->value)],
             'lokasiId' => ['required', 'integer', Rule::exists('service_locations', 'id')->where('is_active', true)->whereNotIn('tipe', ['Gedung', 'Lantai'])],
             'tiketId' => ['nullable', 'string', 'max:50'],
         ];

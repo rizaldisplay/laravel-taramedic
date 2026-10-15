@@ -29,3 +29,4 @@ final class CreateHealthWorkerAction
         return $worker;
     }
 }
+

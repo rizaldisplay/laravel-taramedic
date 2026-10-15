@@ -23,7 +23,7 @@ class SdmkIntegrationController extends Controller
     /** PUT /sdmk/{sdmk}/integrasi  (hanya mapping lokal) */
     public function save(IntegrasiRequest $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->integration->saveMapping(
             $sdmk,
@@ -38,7 +38,7 @@ class SdmkIntegrationController extends Controller
     /** POST /sdmk/{sdmk}/integrasi/verify  -> 503 bila SATUSEHAT belum dikonfigurasi */
     public function verify(Request $request, HealthWorker $sdmk): JsonResponse
     {
-        // Gate::authorize('update', $sdmk);
+        Gate::authorize('update', $sdmk);
 
         $this->integration->verify($sdmk, $request->user()?->id);
 

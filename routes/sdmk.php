@@ -15,7 +15,7 @@ Route::get('sdmk/files/{type}/{id}', [SdmkFileController::class, 'show'])
     ->middleware('signed')->name('sdmk.files.show');
 
 Route::prefix('sdmk')->group(function () {
-    // ---- Dasbor & daftar ----
+       // ---- Dasbor & daftar ----
     Route::get('/', [SdmkController::class, 'index'])->middleware('throttle:120,1');
     Route::get('stats', [SdmkController::class, 'stats']);
     Route::get('options', [SdmkController::class, 'options']);

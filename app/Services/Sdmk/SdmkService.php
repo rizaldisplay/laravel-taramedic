@@ -74,8 +74,8 @@ final class SdmkService
     {
         return $worker->load([
             'competencies',
-            'sips.facility', 'sips.poli', 'sips.room',
-            'placements.facility', 'placements.poli', 'placements.room',
+            'sips.facility', 'sips.poli', 'sips.location',
+            'placements.facility', 'placements.poli', 'placements.location',
             'scheduleDays', 'scheduleSlots',
             'apiLogs' => fn ($q) => $q->limit(20),
         ]);

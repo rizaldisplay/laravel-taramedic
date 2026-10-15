@@ -27,9 +27,10 @@ class WorkerSip extends Model
         return $this->belongsTo(Poli::class);
     }
 
-    public function room(): BelongsTo
+    /** Lokasi pelayanan bertipe Ruang (tabel service_locations; sebelumnya tabel rooms). */
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(ServiceLocation::class, 'service_location_id');
     }
 
     /** SIP berlaku efektif: tanggal belum lewat DAN petugas tidak menandainya Tidak Aktif. */

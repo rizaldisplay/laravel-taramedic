@@ -16,14 +16,13 @@ class QueueSystemSeeder extends Seeder
     public function run(): void
     {
         $services = $this->seedServices();
-        $counters = $this->seedCounters();
-        $antreans = $this->seedAntreans();
+        // $counters = $this->seedCounters();
+        // $antreans = $this->seedAntreans();
 
-        $this->assignServicesToCounters(
-            services: $services,
-            counters: $counters,
-            antreans: $antreans,
-        );
+        // $this->assignServicesToCounters(
+        //     services: $services,
+        //     antreans: $antreans,
+        // );
 
         $this->seedDisplayTvSettings();
         $this->seedAnnouncementConfig();
@@ -76,92 +75,92 @@ class QueueSystemSeeder extends Seeder
      *
      * @return array<string, Counter>
      */
-    private function seedCounters(): array
-    {
-        $definitions = [
-            [
-                'code' => 'P',
-                'name' => 'Loket Pendaftaran',
-                'sort_order' => 1,
-            ],
-            [
-                'code' => 'R',
-                'name' => 'Ruang Poli',
-                'sort_order' => 2,
-            ],
-            [
-                'code' => 'F',
-                'name' => 'Loket Farmasi',
-                'sort_order' => 3,
-            ],
-            [
-                'code' => 'K',
-                'name' => 'Loket Kasir',
-                'sort_order' => 4,
-            ],
-        ];
+    // private function seedCounters(): array
+    // {
+    //     $definitions = [
+    //         [
+    //             'code' => 'P',
+    //             'name' => 'Loket Pendaftaran',
+    //             'sort_order' => 1,
+    //         ],
+    //         [
+    //             'code' => 'R',
+    //             'name' => 'Ruang Poli',
+    //             'sort_order' => 2,
+    //         ],
+    //         [
+    //             'code' => 'F',
+    //             'name' => 'Loket Farmasi',
+    //             'sort_order' => 3,
+    //         ],
+    //         [
+    //             'code' => 'K',
+    //             'name' => 'Loket Kasir',
+    //             'sort_order' => 4,
+    //         ],
+    //     ];
 
-        $counters = [];
+    //     $counters = [];
 
-        foreach ($definitions as $definition) {
-            $counters[$definition['code']] =
-                Counter::query()->updateOrCreate(
-                    ['code' => $definition['code']],
-                    [
-                        ...$definition,
-                        'is_active' => true,
-                    ]
-                );
-        }
+    //     foreach ($definitions as $definition) {
+    //         $counters[$definition['code']] =
+    //             Counter::query()->updateOrCreate(
+    //                 ['code' => $definition['code']],
+    //                 [
+    //                     ...$definition,
+    //                     'is_active' => true,
+    //                 ]
+    //             );
+    //     }
 
-        return $counters;
-    }
+    //     return $counters;
+    // }
 
     /**
      * Antrean menentukan loket fisik.
      *
      * @return array<string, Antrean>
      */
-    private function seedAntreans(): array
-    {
-        $definitions = [
-            [
-                'code' => 'L001',
-                'name' => 'Loket 1',
-                'sort_order' => 1,
-            ],
-            [
-                'code' => 'L002',
-                'name' => 'Loket 2',
-                'sort_order' => 2,
-            ],
-            [
-                'code' => 'L003',
-                'name' => 'Loket 3',
-                'sort_order' => 3,
-            ],
-            [
-                'code' => 'L004',
-                'name' => 'Loket 4',
-                'sort_order' => 4,
-            ],
-        ];
+    // private function seedAntreans(): array
+    // {
+    //     $definitions = [
+    //         [
+    //             'code' => 'L001',
+    //             'name' => 'Loket 1',
+    //             'sort_order' => 1,
+    //         ],
+    //         [
+    //             'code' => 'L002',
+    //             'name' => 'Loket 2',
+    //             'sort_order' => 2,
+    //         ],
+    //         [
+    //             'code' => 'L003',
+    //             'name' => 'Loket 3',
+    //             'sort_order' => 3,
+    //         ],
+    //         [
+    //             'code' => 'L004',
+    //             'name' => 'Loket 4',
+    //             'sort_order' => 4,
+    //         ],
+    //     ];
 
-        $antreans = [];
+    //     $antreans = [];
 
-        foreach ($definitions as $definition) {
-            $antreans[$definition['code']] =
-                Antrean::query()->updateOrCreate(
-                    ['code' => $definition['code']],
-                    [
-                        ...$definition,
-                        'is_active' => true,
-                    ]
-                );
-        }
+    //     foreach ($definitions as $definition) {
+    //         $antreans[$definition['code']] =
+    //             Antrean::query()->updateOrCreate(
+    //                 ['code' => $definition['code']],
+    //                 [
+    //                     ...$definition,
+    //                     'is_active' => true,
+    //                 ]
+    //             );
+    //     }
 
-        return $antreans;
-    }
+    //     return $antreans;
+    // }
 
     /**
      * Menghubungkan setiap counter dengan seluruh service
@@ -171,41 +170,41 @@ class QueueSystemSeeder extends Seeder
      * @param array<string, Counter> $counters
      * @param array<string, Antrean> $antreans
      */
-    private function assignServicesToCounters(
-        array $services,
-        array $counters,
-        array $antreans,
-    ): void {
-        $now = now();
+    // private function assignServicesToCounters(
+    //     array $services,
+    //     array $counters,
+    //     array $antreans,
+    // ): void {
+    //     $now = now();
 
-        $rows = [];
+    //     $rows = [];
 
-        foreach ($counters as $counter) {
-            foreach ($services as $service) {
-                foreach ($antreans as $antrean) {
-                    $rows[] = [
-                        'counter_id' => $counter->id,
-                        'service_id' => $service->id,
-                        'antrean_id' => $antrean->id,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ];
-                }
-            }
-        }
+    //     foreach ($counters as $counter) {
+    //         foreach ($services as $service) {
+    //             foreach ($antreans as $antrean) {
+    //                 $rows[] = [
+    //                     'counter_id' => $counter->id,
+    //                     'service_id' => $service->id,
+    //                     'antrean_id' => $antrean->id,
+    //                     'created_at' => $now,
+    //                     'updated_at' => $now,
+    //                 ];
+    //             }
+    //         }
+    //     }
 
-        DB::table('counter_service')->upsert(
-            $rows,
-            [
-                'counter_id',
-                'service_id',
-                'antrean_id',
-            ],
-            [
-                'updated_at',
-            ]
-        );
-    }
+    //     DB::table('counter_service')->upsert(
+    //         $rows,
+    //         [
+    //             'counter_id',
+    //             'service_id',
+    //             'antrean_id',
+    //         ],
+    //         [
+    //             'updated_at',
+    //         ]
+    //     );
+    // }
 
     /**
      * Pengaturan Display TV.

@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             $this->call(RegistrationMasterSeeder::class);
             $this->call(SdmkMasterSeeder::class);
             $this->call(SdmkDoctorSeeder::class);
+            $this->call(LoketCounterSeeder::class);
+            $this->call(ProdukObatSeeder::class);
         }
     }
 }

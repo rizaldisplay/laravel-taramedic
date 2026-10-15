@@ -5,7 +5,7 @@ namespace App\Services\Sdmk;
 use App\Enums\SdmkReferenceType as T;
 use App\Models\Facility;
 use App\Models\Poli;
-use App\Models\Room;
+use App\Models\ServiceLocation;
 use App\Models\SdmkReference;
 use Illuminate\Support\Collection;
 
@@ -37,8 +37,9 @@ final class SdmkOptionsService
                 ->map(fn ($f) => ['value' => (string) $f->id, 'label' => $f->name])->values(),
             'poli' => Poli::where('is_active', true)->orderBy('name')->get()
                 ->map(fn ($p) => ['value' => (string) $p->id, 'label' => $p->name, 'fasyankes' => $p->facility_id ? (string) $p->facility_id : null])->values(),
-            'ruangan' => Room::where('is_active', true)->orderBy('name')->get()
-                ->map(fn ($r) => ['value' => (string) $r->id, 'label' => $r->name, 'poli' => $r->poli_id ? (string) $r->poli_id : null])->values(),
+            // Ruangan = lokasi pelayanan bertipe Ruang (service_locations); poli bersifat opsional.
+            'ruangan' => ServiceLocation::where('is_active', true)->where('tipe', 'Ruang')->orderBy('name')->get()
+                ->map(fn ($l) => ['value' => (string) $l->id, 'label' => $l->name, 'poli' => $l->poli_id ? (string) $l->poli_id : null])->values(),
             'peranUnit' => $plain(T::PeranUnit),
             'jabatan' => $plain(T::Jabatan),
             'tipeJadwal' => $plain(T::TipeJadwal),

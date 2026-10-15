@@ -22,3 +22,4 @@ class IntegrasiRequest extends SdmkRequest
         return ['mappingSpesialisasi' => 'Mapping spesialisasi', 'mappingTipePraktisi' => 'Tipe praktisi'];
     }
 }
+
