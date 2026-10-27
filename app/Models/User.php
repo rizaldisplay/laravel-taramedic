@@ -2,77 +2,82 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject; // [BARU] Import interface JWTSubject
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable([
+    'username',
+    'name',
+    'email',
+    'phone_number',
+    'phone_verified',
+    'phone_verified_at',
+    'password',
+    'sdmk_id',
+    'two_factor_enabled'
+])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject // [BARU] Implementasikan JWTSubject
 {
-    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    /** @var array<string, mixed> */
-    protected $attributes = [
-        'role' => 'operator',
-    ];
-
     /**
-     * @return Attribute<UserRole, UserRole|string|null>
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
      */
-    protected function role(): Attribute
+    public function getJWTIdentifier()
     {
-        return Attribute::make(
-            get: fn (?string $value): UserRole => $value !== null
-                ? UserRole::from($value)
-                : UserRole::Operator,
-            set: fn (UserRole|string|null $value): string => match (true) {
-                $value instanceof UserRole => $value->value,
-                $value === null => UserRole::Operator->value,
-                default => $value,
-            },
-        );
+        // Mengembalikan primary key dari user (biasanya 'id')
+        return $this->getKey();
     }
 
     /**
-     * @return array<string, string>
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
      */
+    public function getJWTCustomClaims()
+    {
+        // Opsional: Anda bisa memasukkan custom payload seperti role di sini jika mau
+        // Contoh: return ['role' => $this->roles->pluck('slug')];
+        return [];
+    }
+
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'  => 'datetime',
+            'phone_verified_at'  => 'datetime',
+            'password'           => 'hashed',
+            'phone_verified'     => 'boolean',
+            'two_factor_enabled' => 'boolean',
         ];
     }
 
-    /**
-     * @return HasMany<QueueTicket, $this>
-     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class); // pastikan withTimestamps() dihapus sesuai error sebelumnya jika belum ditambahkan di migration
+    }
+
     public function createdQueueTickets(): HasMany
     {
         return $this->hasMany(QueueTicket::class, 'created_by_user_id');
     }
 
-    /**
-     * @return HasMany<QueueTicket, $this>
-     */
     public function handledQueueTickets(): HasMany
     {
         return $this->hasMany(QueueTicket::class, 'handled_by_user_id');
     }
 
-    /**
-     * @return HasMany<QueueCall, $this>
-     */
     public function queueCalls(): HasMany
     {
         return $this->hasMany(QueueCall::class);

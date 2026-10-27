@@ -9,18 +9,20 @@ class RefreshToken extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'user_id',
         'token',
+        'device_id', // TAMBAHKAN BARIS INI
+        'ip_address',
+        'user_agent',
+        'last_used_at',
         'expires_at',
         'is_revoked',
-        'ip_address',
-        'user_agent'
-    ];
-
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'is_revoked' => 'boolean',
     ];
 
     public function user()

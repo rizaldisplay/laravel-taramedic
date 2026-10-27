@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -24,7 +25,8 @@ class AuthController extends Controller
     }
 
     /**
-     * Step 1: Login Username + Password -> Memicu Pengiriman OTP WA
+     * Step 1: Login Username + Password
+     * Jika 2FA aktif -> Kirim OTP WA. Jika tidak -> Langsung terbitkan Token.
      */
     public function login(Request $request)
     {
@@ -35,7 +37,7 @@ class AuthController extends Controller
 
         $user = User::where('username', $request->username)->first();
 
-        // Validasi Kredensial Pengguna
+        // 1. Validasi Kredensial Pengguna
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status'  => false,
@@ -43,42 +45,64 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Generate 6 Digit Angka OTP Random
-        $otpRandom = (string) rand(100000, 999999);
+        // 2. Cek Status 2FA Pengguna
+        if ($user->two_factor_enabled) {
+            // --- ALUR DENGAN 2FA (KIRIM OTP) ---
+            
+            $otpRandom = (string) rand(100000, 999999);
 
-        // Nonaktifkan OTP lama yang belum terpakai milik user ini
-        OtpCode::where('user_id', $user->id)
-            ->where('is_used', false)
-            ->update(['is_used' => true]);
+            // Nonaktifkan OTP lama
+            OtpCode::where('user_id', $user->id)
+                ->where('is_used', false)
+                ->update(['is_used' => true]);
 
-        // Simpan OTP Baru ke Database (Masa berlaku 5 Menit)
-        OtpCode::create([
-            'user_id'    => $user->id,
-            'otp'        => $otpRandom,
-            'type'       => 'login',
-            'expires_at' => now()->addMinutes(5),
-            'is_used'    => false,
-        ]);
+            // Simpan OTP Baru
+            OtpCode::create([
+                'user_id'    => $user->id,
+                'otp'        => $otpRandom,
+                'type'       => 'login',
+                'expires_at' => now()->addMinutes(5),
+                'is_used'    => false,
+            ]);
 
-        // Kirim Kode OTP via WhatsApp Service
-        $this->waService->sendOtp($user->phone_number, $otpRandom);
+            $this->waService->sendOtp($user->phone_number, $otpRandom);
 
-        // Audit Log: Request OTP
+            AuditLogService::record(
+                $user->id,
+                'auth.otp_requested',
+                'Kode OTP dikirimkan via WhatsApp',
+                $request
+            );
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Kode OTP berhasil dikirim ke nomor WhatsApp Anda',
+                'is_2fa'  => true, // Flag untuk memberitahu frontend agar memunculkan form OTP
+                'data'    => [
+                    'user_id'      => $user->id,
+                    'phone_number' => substr($user->phone_number, 0, 4) . '****' . substr($user->phone_number, -3)
+                ]
+            ]);
+        }
+
+        // --- ALUR TANPA 2FA (LANGSUNG LOGIN) ---
+        
+        // Track Perangkat Pengguna
+        $this->trackDevice($user, $request);
+
+        // Generasi Access Token (JWT) & Refresh Token
+        $accessToken = JWTAuth::fromUser($user);
+        $refreshToken = $this->generateRefreshToken($user, $request);
+
         AuditLogService::record(
             $user->id,
-            'auth.otp_requested',
-            'Kode OTP dikirimkan via WhatsApp',
+            'auth.login_success',
+            'User berhasil login (Tanpa 2FA)',
             $request
         );
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Kode OTP berhasil dikirim ke nomor WhatsApp Anda',
-            'data'    => [
-                'user_id'      => $user->id,
-                'phone_number' => substr($user->phone_number, 0, 4) . '****' . substr($user->phone_number, -3)
-            ]
-        ]);
+        // Menggunakan helper respondWithTokens yang sudah Anda buat
+        return $this->respondWithTokens($accessToken, $refreshToken->token, $user);
     }
 
     /**
@@ -179,9 +203,12 @@ class AuthController extends Controller
      */
     public function me()
     {
+        // Load relasi roles agar response me() memiliki data akses peran user
+        $user = User::with('roles')->find(auth('api')->id());
+        
         return response()->json([
             'status' => true,
-            'data'   => auth('api')->user()
+            'data'   => $user
         ]);
     }
 
@@ -190,6 +217,9 @@ class AuthController extends Controller
      */
     protected function respondWithTokens($accessToken, $refreshToken, $user)
     {
+        // Load relasi roles jika belum diload
+        $user->loadMissing('roles');
+        
         return response()->json([
             'status'  => true,
             'message' => 'Autentikasi berhasil',
@@ -199,7 +229,8 @@ class AuthController extends Controller
                     'name'     => $user->name,
                     'username' => $user->username,
                     'email'    => $user->email,
-                    'role'     => $user->role,
+                    // Mengambil array role slugs, contoh: ['super_admin', 'dokter']
+                    'roles'    => $user->roles->pluck('slug'), 
                 ],
                 'authorization' => [
                     'access_token'  => $accessToken,
@@ -241,9 +272,13 @@ class AuthController extends Controller
      */
     protected function generateRefreshToken(User $user, Request $request): RefreshToken
     {
+        // Ambil device_id dengan logika yang sama dengan trackDevice()
+        $deviceId = $request->header('X-Device-Id') ?? md5($request->userAgent() . $request->ip());
+
         return RefreshToken::create([
             'user_id'    => $user->id,
             'token'      => Str::random(80),
+            'device_id'  => $deviceId, // TAMBAHKAN INI AGAR TIDAK SQL ERROR
             'expires_at' => now()->addDays(30),
             'is_revoked' => false,
             'ip_address' => $request->ip(),

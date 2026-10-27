@@ -43,6 +43,9 @@ return new class extends Migration
             
             // Primary key gabungan agar tidak ada duplikasi data
             $table->primary(['user_id', 'role_id']);
+            
+            // TAMBAHKAN BARIS INI
+            $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
